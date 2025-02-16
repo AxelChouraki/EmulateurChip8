@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "sdl.h": "c",
+        "cpu.h": "c"
+    },
+    "makefile.makePath": "C:\\msys64\\usr\\bin\\make.exe"
+}
