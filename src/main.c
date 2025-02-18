@@ -19,14 +19,16 @@ int main()
     initialiserPixel() ; 
     initialiserJump();
     chargerFont();
-    
+
     cpu.pc = 0x200; // CHIP-8 démarre à l'adresse 512
     printf("PC initialise a %04X\n", cpu.pc);
     
     Uint8 continuer=1,demarrer=0,compteur=0; 
 
-    //demarrer=chargerJeu("ROMs/Games/GAMES/MAZE.ch8") ;
-    const char* jeu = "BC_test.ch8";
+
+
+    //demarrer=chargerJeu("roms/Games/GAMES/MAZE.ch8") ;
+    const char* jeu = "roms/Test/BC_test.ch8";
     printf("Jeu charge: %s\n", jeu);
     demarrer=chargerJeu(jeu) ;
 
