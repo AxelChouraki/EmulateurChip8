@@ -16,6 +16,8 @@ void initialiserPixel()
         { 
             pixel[x][y].position.x=x*DIMPIXEL; 
             pixel[x][y].position.y=y*DIMPIXEL; 
+            pixel[x][y].position.w = DIMPIXEL;
+            pixel[x][y].position.h = DIMPIXEL; 
             pixel[x][y].couleur=NOIR; 
         } 
     } 
@@ -69,17 +71,9 @@ void initialiserEcran()
     } 
 } 
 
-void dessinerPixel(PIXEL pixel) {
-     /* pixel.couleur peut prendre deux valeurs : 0, auquel cas on dessine le pixel en noir, ou 1, on dessine alors le pixel en blanc */ 
-
-    SDL_Texture *texture = (pixel.couleur == NOIR) ? carre[0] : carre[1];
-    SDL_RenderCopy(renderer, texture, NULL, &pixel.position);
-}
-
 void effacerEcran() 
 { 
     //Pour effacer l'écran, on remet tous les pixels en noir 
-
     Uint8 x=0,y=0; 
     for(x=0;x<l;x++) 
     { 
@@ -94,18 +88,22 @@ void effacerEcran()
     SDL_FillRect(surface, NULL, NOIR); // Remplir la surface avec la couleur NOIR
     SDL_UpdateWindowSurface(window); // Met à jour la fenêtre après avoir modifié la surface
 } 
+
 void updateEcran() 
 { 
-  //On dessine tous les pixels à l'écran 
-Uint8 x=0,y=0; 
+    SDL_RenderClear(renderer);
 
- for(x=0;x<l;x++) 
+    Uint8 x=0,y=0; 
+    for(x=0;x<l;x++) 
     { 
         for(y=0;y<L;y++) 
         { 
-             dessinerPixel(pixel[x][y]); 
+            // pixel.couleur peut prendre deux valeurs : 0, auquel cas on dessine le pixel en noir, ou 1, on dessine alors le pixel en blanc
+            SDL_Texture *texture = (pixel[x][y].couleur == NOIR) ? carre[0] : carre[1];
+            if (SDL_RenderCopy(renderer, texture, NULL, &pixel[x][y].position) != 0) {
+                printf("Erreur SDL_RenderCopy à (%d, %d) : %s\n", x, y, SDL_GetError());
+            }
         } 
     } 
-
     SDL_RenderPresent(renderer); //on affiche les modifications 
 }
