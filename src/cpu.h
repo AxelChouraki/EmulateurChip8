@@ -5,6 +5,7 @@
 #define TAILLEMEMOIRE 4096 
 #define ADRESSEDEBUT 512 
 #define NBROPCODE 35 
+#define NBRTOUCHE 16
 
 
 typedef struct 
@@ -17,6 +18,7 @@ typedef struct
     Uint8 compteurJeu; //compteur pour la synchronisation 
     Uint8 compteurSon; //compteur pour le son 
     Uint16 pc; //pour parcourir le tableau « mémoire » 
+    Uint8 touche[NBRTOUCHE];
 } CPU; 
 
 typedef struct 
@@ -37,5 +39,8 @@ Uint8 recupererAction(Uint16) ;
 void interpreterOpcode(Uint16) ; 
 void dessinerEcran(Uint8 b1,Uint8 b2, Uint8 b3) ;
 void chargerFont() ;
+Uint8 attendAppui(Uint8 b3) ;
+void reset(); 
+
 
 #endif

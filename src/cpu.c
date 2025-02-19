@@ -17,12 +17,35 @@ void initialiserCpu()
         cpu.V[i]=0; 
         cpu.saut[i]=0; 
     } 
+    for(i=0;i<NBRTOUCHE;i++) 
+    { 
+        cpu.touche[i]=0; 
+    } 
 
     cpu.pc=ADRESSEDEBUT; 
     cpu.nbrsaut=0; 
     cpu.compteurJeu=0; 
     cpu.compteurSon=0; 
     cpu.I=0; 
+} 
+
+void reset() 
+{ 
+    Uint8 i=0; 
+    for(i=0;i<16;i++) 
+    { 
+        cpu.V[i]=0; 
+        cpu.saut[i]=0; 
+        cpu.touche[i]=0; 
+    } 
+
+    cpu.pc=ADRESSEDEBUT; 
+    cpu.nbrsaut=0; 
+    cpu.compteurJeu=0; 
+    cpu.compteurSon=0; 
+    cpu.I=0; 
+    initialiserPixel(); 
+    updateEcran(); 
 } 
 
 void decompter() 
@@ -315,15 +338,19 @@ void interpreterOpcode(Uint16 opcode)
             break; 
             } 
     case 24:{ 
-                 //EX9E saute l'instruction suivante si la clé stockée dans VX est pressée. 
-               
-
+                //EX9E saute l'instruction suivante si la clé stockée dans VX est pressée. 
+                if(cpu.touche[cpu.V[b3]]==1) //1 = pressé ; 0 = relâché 
+                { 
+                    cpu.pc+=2; 
+                } 
                 break; 
             } 
     case 25:{ 
                 //EXA1 saute l'instruction suivante si la clé stockée dans VX n'est pas pressée. 
-                
-
+                if(cpu.touche[cpu.V[b3]]==0) //1 = pressé ; 0 = relâché 
+                { 
+                cpu.pc+=2; 
+                }
                 break; 
             } 
 
@@ -335,8 +362,7 @@ void interpreterOpcode(Uint16 opcode)
             } 
     case 27:{ 
                 //FX0A attend l'appui sur une touche et stocke ensuite la donnée dans VX. 
-                
-
+                attendAppui(b3);
                 break; 
             } 
 
@@ -467,4 +493,46 @@ void chargerFont()
     cpu.memoire[65]=0xE0;cpu.memoire[66]=0x90;cpu.memoire[67]=0x90;cpu.memoire[68]=0x90;cpu.memoire[69]=0xE0; // D 
     cpu.memoire[70]=0xF0;cpu.memoire[71]=0x80;cpu.memoire[72]=0xF0;cpu.memoire[73]=0x80;cpu.memoire[74]=0xF0; // E 
     cpu.memoire[75]=0xF0;cpu.memoire[76]=0x80;cpu.memoire[77]=0xF0;cpu.memoire[78]=0x80;cpu.memoire[79]=0x80; // F 
+}
+
+Uint8 attendAppui(Uint8 b3) 
+{ 
+    Uint8 attend=1,continuer=1; 
+
+    while(attend) 
+    { 
+        SDL_WaitEvent(&event); 
+
+            switch(event.type) 
+            { 
+                 case SDL_QUIT:{ continuer=0; attend=0; break;} 
+
+                case SDL_KEYDOWN:{ 
+
+                    switch(event.key.keysym.sym) 
+                    {
+                        case SDLK_KP_0:{ cpu.V[b3]=0x0; cpu.touche[0x0]=1; attend=0;break;} 
+                        case SDLK_KP_7:{ cpu.V[b3]=0x1; cpu.touche[0x1]=1; attend=0;break;} 
+                        case SDLK_KP_8:{ cpu.V[b3]=0x2; cpu.touche[0x2]=1; attend=0;break;} 
+                        case SDLK_KP_9:{ cpu.V[b3]=0x3; cpu.touche[0x3]=1; attend=0;break;} 
+                        case SDLK_KP_4:{ cpu.V[b3]=0x4; cpu.touche[0x4]=1; attend=0;break;} 
+                        case SDLK_KP_5:{ cpu.V[b3]=0x5; cpu.touche[0x5]=1; attend=0;break;} 
+                        case SDLK_KP_6:{ cpu.V[b3]=0x6; cpu.touche[0x6]=1; attend=0;break;} 
+                        case SDLK_KP_1:{ cpu.V[b3]=0x7; cpu.touche[0x7]=1; attend=0;break;} 
+                        case SDLK_KP_2:{ cpu.V[b3]=0x8; cpu.touche[0x8]=1; attend=0;break;} 
+                        case SDLK_KP_3:{ cpu.V[b3]=0x9; cpu.touche[0x9]=1; attend=0;break;} 
+                        case SDLK_RIGHT:{        cpu.V[b3]=0xA;       cpu.touche[0xA]=1;  attend=0;break;} 
+                        case SDLK_KP_PERIOD:{    cpu.V[b3]=0xB;     cpu.touche[0xB]=1;  attend=0;break;} 
+                        case SDLK_KP_MULTIPLY:{  cpu.V[b3]=0xC;     cpu.touche[0xC]=1;  attend=0;break;} 
+                        case SDLK_KP_MINUS:{     cpu.V[b3]=0xD;     cpu.touche[0xD]=1;  attend=0;break;} 
+                        case SDLK_KP_PLUS:{      cpu.V[b3]=0xE;     cpu.touche[0xE]=1;  attend=0;break;} 
+                        case SDLK_KP_ENTER:{     cpu.V[b3]=0xF;     cpu.touche[0xF]=1;  attend=0;break;} 
+                        default:{ break;} 
+                    } break;} 
+
+          default:{ break;} 
+      } 
+    } 
+
+ return continuer; 
 }
